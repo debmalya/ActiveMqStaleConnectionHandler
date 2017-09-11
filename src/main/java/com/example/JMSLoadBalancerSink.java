@@ -85,6 +85,7 @@ public class JMSLoadBalancerSink {
 		for (int i = 0; i < numberOfSinks; i++) {
 			connectionFactoryList.add(new ActiveMQConnectionFactory(brokerURL[i]));
 			queueNamesList.add(queueNames[i]);
+			boolean isConnected = false;
 
 			for (int j = 0; j < numberOfTimesToTryToReconnect; j++) {
 				try {
@@ -99,6 +100,7 @@ public class JMSLoadBalancerSink {
 
 					// Session creation
 					sessionList.add(connectionList.get(i).createSession(false, Session.AUTO_ACKNOWLEDGE));
+					isConnected = true;
 					break;
 				} catch (Exception ex) {
 					logger.log(java.util.logging.Level.WARNING, "Number of times failed to connect: " + (j + 1));
@@ -117,7 +119,7 @@ public class JMSLoadBalancerSink {
 				logger.log(java.util.logging.Level.WARNING,
 						"Failed to connect " + numberOfTimesToTryToReconnect + " times.");
 				throw new Exception("None of the Messaging queues are accessible.");
-			} else {
+			} else if (isConnected) {
 				destinationsList.add(sessionList.get(i).createQueue(queueNamesList.get(i)));
 				producerSinksList.add(sessionList.get(i).createProducer(destinationsList.get(i)));
 				producerSinksList.get(i).setDeliveryMode(DeliveryMode.PERSISTENT);
@@ -173,13 +175,15 @@ public class JMSLoadBalancerSink {
 								writer.close();
 								fileRecordCounter = 0;
 							}
-							// TODO: why this is set to true? Not able to send message yet?
+							// TODO: why this is set to true? Not able to send
+							// message yet?
 							messageSent = true;
 						} else {
 							// TODO : code review
 							// throw new Exception("None of the queues are
 							// reachable and writeToFile is: " + writeToFile);
-							logger.log(java.util.logging.Level.WARNING, "None of the queues are reachable and writeToFile is: " + writeToFile);
+							logger.log(java.util.logging.Level.WARNING,
+									"None of the queues are reachable and writeToFile is: " + writeToFile);
 						}
 					} else {
 						try {
@@ -246,10 +250,10 @@ public class JMSLoadBalancerSink {
 					// Session creation
 					sessionList.add(connectionList.get(i).createSession(false, Session.AUTO_ACKNOWLEDGE));
 					deadIndexList.remove(i);
-					
+
 					break;
 				} catch (Exception ex) {
-					logger.log(java.util.logging.Level.WARNING, "Number of times failed to connect: " + (j + 1));
+					logger.log(java.util.logging.Level.WARNING, "Number of times failed to reconnect: " + (j + 1));
 					// TODO : introduce retry delay
 					Thread.sleep(retryDelay);
 					if (j == numberOfTimesToTryToReconnect - 1) {
@@ -269,9 +273,11 @@ public class JMSLoadBalancerSink {
 				// throw new Exception("None of the Messaging queues are
 				// accessible.");
 			} else {
-				destinationsList.add(sessionList.get(i).createQueue(queueNamesList.get(i)));
-				producerSinksList.add(sessionList.get(i).createProducer(destinationsList.get(i)));
-				producerSinksList.get(i).setDeliveryMode(DeliveryMode.PERSISTENT);
+				// Some bug here, java.lang.IndexOutOfBoundsException: Index: 1,
+				// Size: 1
+				// destinationsList.add(sessionList.get(i).createQueue(queueNamesList.get(i)));
+				// producerSinksList.add(sessionList.get(i).createProducer(destinationsList.get(i)));
+				// producerSinksList.get(i).setDeliveryMode(DeliveryMode.PERSISTENT);
 				numberOfSinks = producerSinksList.size();
 			}
 		}
