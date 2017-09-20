@@ -22,7 +22,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class JMSLoadBalancerSink {
 
+	// Total number of sinks.
 	private int numberOfSinks;
+	// 
 	private int numberOfTimesToTryToSendMessage;
 	private int numberOfTimesToTryToReconnect;
 	private String[] brokerURL;
@@ -50,6 +52,17 @@ public class JMSLoadBalancerSink {
 	// TODO: introduced new list to keep track of dead connection to retry.
 	private List<Integer> deadIndexList = new ArrayList<>();
 
+	/**
+	 * To initialize ActiveMQ connections, 
+	 * @param queues - queue names, if there are multiple queues, each queue name will be separated by "|".
+	 * @param brokerURLs - broker URL, if there are multiple brokers, each broker will be separated by "|".
+	 * @param retryConnectionCount - how many times it will retry to establish a connection?
+	 * @param retryMessageCount - how many times it will retry to 
+	 * @param writeToFile - whether write to file, if not able to send the message?
+	 * @param recordsPerFile - in case it writes to file, how many records it will write to file?
+	 * @param outputFileDirectory - what will be the output directory to write the file?
+	 * @throws Exception 
+	 */
 	public synchronized void initialize(String queues, String brokerURLs, int retryConnectionCount,
 			int retryMessageCount, boolean writeToFile, int recordsPerFile, String outputFileDirectory)
 			throws Exception {
@@ -104,7 +117,7 @@ public class JMSLoadBalancerSink {
 					break;
 				} catch (Exception ex) {
 					logger.log(java.util.logging.Level.WARNING, "Number of times failed to connect: " + (j + 1));
-					// TODO : introduce retry delay
+					// TODO : introduced retry delay
 					Thread.sleep(retryDelay);
 					if (j == numberOfTimesToTryToReconnect - 1) {
 						// TODO: all attempts failed now adding into
@@ -127,6 +140,12 @@ public class JMSLoadBalancerSink {
 		}
 	}
 
+	/**
+	 * 
+	 * @param message to send.
+	 * @param messageType type of the message, currently there are two types only "text" and "map" message.
+	 * @throws Exception
+	 */
 	public void process(String message, String messageType) throws Exception {
 		TextMessage textMessage = null;
 		MapMessage mapMessage = null;
@@ -310,6 +329,13 @@ public class JMSLoadBalancerSink {
 		return messageSent;
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @param producer
+	 * @param numberOfTimesToTryToSendMessage
+	 * @return
+	 */
 	public boolean sendMessage(MapMessage message, MessageProducer producer, int numberOfTimesToTryToSendMessage) {
 
 		logger.log(java.util.logging.Level.INFO, "Recieved Map Message : " + message);
@@ -345,9 +371,5 @@ public class JMSLoadBalancerSink {
 		return fileRecordCounter;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 
 }
