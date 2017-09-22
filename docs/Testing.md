@@ -13,3 +13,4 @@ First ActiveMQ queue
 
 Second ActiveMQ queue
 ![GitHub Logo](./images/FristActiveMQAfterScenario1.png)
+## messages are equally distributed in both the queues
