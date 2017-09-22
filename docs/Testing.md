@@ -13,7 +13,7 @@ First ActiveMQ queue
 
 Second ActiveMQ queue
 ![GitHub Logo](./images/FristActiveMQAfterScenario1.png)
-#### messages are equally distributed in both the queues
+#### messages are equally distributed in both the queues (500,500)
 
 
 # Scenario 2
@@ -31,6 +31,7 @@ Both the connections are active at the beginning of the test. Stopped first conn
 First activeMQ queue before test
 ![GitHub Logo](./images/FirstActiveMQueueBeforeScenario3.png)
 
+
 Second activeMQ queue before test
 ![GitHub Logo](./images/SecondActiveMQueueBeforeScenario3.png)
 
@@ -39,6 +40,10 @@ First activeMQ queue after test
 
 Second activeMQ queue after test
 ![GitHub Logo](./images/SecondActiveMQueueAfterScenario3.png)
+
+Total number of messages consumed is 1000.
+Messages consumed by the first queue is 74 (574 - 500)
+Messages consumed by the second queue is 926
 
 
 
