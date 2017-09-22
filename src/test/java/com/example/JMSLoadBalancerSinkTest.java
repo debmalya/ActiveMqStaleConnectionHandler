@@ -11,8 +11,9 @@ public class JMSLoadBalancerSinkTest {
 	@BeforeClass
 	public static void setup() {
 		try {
-			// Running ActiveMQ locally.
-			sinking.initialize("test.reconnection|test.reconnection", "tcp://localhost:61616|tcp://192.168.165.135:61616", 3, 3, true, 10, "./output");
+			// 1. Running ActiveMQ locally.
+			// 2. Running ActiveMQ in VM.
+			sinking.initialize("test.reconnection|test.reconnection", "tcp://localhost:61616|tcp://192.168.165.135:61616", 3, 3, true, 1, "./output");
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(e.getMessage(), true);

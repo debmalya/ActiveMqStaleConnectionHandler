@@ -21,6 +21,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class JMSLoadBalancerSink {
@@ -56,7 +57,7 @@ public class JMSLoadBalancerSink {
 
 	protected Logger logger = Logger.getLogger("JMSLoadBalancerSink.log");
 	// TODO : introduced new variable (needs review)
-	private long retryDelay = 15000;
+	private long retryDelay = 1500;
 	// TODO: introduced new list to keep track of dead connection to retry.
 	private List<Integer> injuryList = new ArrayList<>();
 
@@ -150,19 +151,27 @@ public class JMSLoadBalancerSink {
 						// deadIndexList
 						// later we will use it to reconnect.
 						injuryList.add(i);
+
+						// Later when this connection is available we will set
+						// it.
+						// To fix the issue #1
+						destinationsList.add(null);
+						connectionList.add(null);
+						sessionList.add(null);
+						producerSinksList.add(null);
 					}
 				}
 			}
 
-			if (connectionList.size() == 0) {
-				logger.log(java.util.logging.Level.WARNING,
-						"Failed to connect " + numberOfTimesToTryToReconnect + " times.");
-				throw new Exception("None of the Messaging queues are accessible.");
-			} else if (isConnected) {
+			if (isConnected) {
 				destinationsList.add(sessionList.get(i).createQueue(queueNamesList.get(i)));
 				producerSinksList.add(sessionList.get(i).createProducer(destinationsList.get(i)));
 				producerSinksList.get(i).setDeliveryMode(DeliveryMode.PERSISTENT);
 			}
+		}
+
+		if (connectionList.size() == 0) {
+			logger.log(java.util.logging.Level.WARNING, "There is no available connection(s), will try again later");
 		}
 	}
 
@@ -206,23 +215,21 @@ public class JMSLoadBalancerSink {
 				}
 
 				// Message sending failed on first attempt
+
 				while (!messageSent) {
-					logger.log(java.util.logging.Level.WARNING, "Setting Sink No: " + sinkIndex + ", Sink: "
-							+ (queueNamesList.get(sinkIndex).toString()) + " to null");
-					try {
-						isValidSession = false;
+
+					isValidSession = false;
+
+					if (!injuryList.contains(sinkIndex)) {
+						injuryList.add(sinkIndex);
+
 						producerSinksList.set(sinkIndex, null);
 						sessionList.set(sinkIndex, null);
-						// TODO: needs a code review
-						// added those index to
 						connectionList.set(sinkIndex, null);
 						connectionFactoryList.set(sinkIndex, null);
-						if (!injuryList.contains(sinkIndex)) {
-							injuryList.add(sinkIndex);
-							logger.log(java.util.logging.Level.WARNING, "Added to dead index list, sink No: "
-									+ sinkIndex + ", Sink: " + (queueNamesList.get(sinkIndex).toString()));
-						}
-					} catch (IndexOutOfBoundsException ie) {
+
+						logger.log(java.util.logging.Level.WARNING, "Added to dead index list, sink No: " + sinkIndex
+								+ ", Sink: " + (queueNamesList.get(sinkIndex).toString()));
 					}
 
 					numberOfSinks = producerSinksList.size();
@@ -254,6 +261,7 @@ public class JMSLoadBalancerSink {
 							} else if (isValidSession) {
 								// reconnectNSendMessage(message, messageType);
 							} else {
+								// try all the sinks, no luck.
 								// get freedom from while true loop
 								break;
 							}
@@ -263,8 +271,10 @@ public class JMSLoadBalancerSink {
 					}
 				}
 				// Next time it will send to the next available sink.
+
 				sinkIndex++;
 				sinkIndex = (sinkIndex >= numberOfSinks) ? 0 : sinkIndex;
+
 			} catch (Exception e) {
 				// TODO: never give up
 				// Try to reconnect
@@ -321,26 +331,38 @@ public class JMSLoadBalancerSink {
 
 			for (int j = 0; j < numberOfTimesToTryToReconnect; j++) {
 				try {
-					Connection connection = connectionFactoryList.get(i).createConnection();
+					ActiveMQConnectionFactory connectionFactory = connectionFactoryList.get(i);
+					if (connectionFactory == null) {
+						connectionFactory = new ActiveMQConnectionFactory(brokerURL[i]);
+					}
+					if (connectionFactory != null) {
 
-					// Starting connection. Trying to tack exceptions related to
-					// JMS
-					ExceptionListener listener = new ExceptionHandler();
-					connection.setExceptionListener(listener);
-					connectionList.set(i, connection);
-					connection.start();
+						// Fix for issue #2
+						connectionFactoryList.set(i, connectionFactory);
+						Connection connection = connectionFactory.createConnection();
 
-					// Session creation, dursing reconnection
-					Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-					sessionList.set(i, session);
+						// Starting connection. Trying to tack exceptions
+						// related to
+						// JMS
+						ExceptionListener listener = new ExceptionHandler();
+						connection.setExceptionListener(listener);
+						connectionList.set(i, connection);
+						connection.start();
 
-					injuryList.remove(i);
-					logger.log(java.util.logging.Level.INFO, " Able to establish connection " + i);
-					MessageProducer producer = session.createProducer(destinationsList.get(i));
-					producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-					producerSinksList.set(i, producer);
+						// Session creation, dursing reconnection
+						Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+						sessionList.set(i, session);
 
-					break;
+						injuryList.remove(i);
+						logger.log(java.util.logging.Level.INFO, " Able to establish connection " + i);
+						MessageProducer producer = session.createProducer(destinationsList.get(i));
+						producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+						producerSinksList.set(i, producer);
+						destinationsList.set(i, sessionList.get(i).createQueue(queueNamesList.get(i)));
+
+						break;
+					}
+
 				} catch (Exception ex) {
 					logger.log(java.util.logging.Level.SEVERE, "Not able to establish connection :" + ex.getMessage(),
 							ex);
