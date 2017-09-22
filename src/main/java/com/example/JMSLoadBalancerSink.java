@@ -216,6 +216,10 @@ public class JMSLoadBalancerSink {
 
 				// Message sending failed on first attempt
 
+				// To fix issue #3
+				// To try sending message across other available sinks.
+				// We already tried this sink, have to check remaining sinks.
+				int startingSinkNo = sinkIndex;
 				while (!messageSent) {
 
 					isValidSession = false;
@@ -233,9 +237,10 @@ public class JMSLoadBalancerSink {
 					}
 
 					numberOfSinks = producerSinksList.size();
+					sinkIndex++;
 					sinkIndex = (sinkIndex >= numberOfSinks) ? 0 : sinkIndex;
 
-					if ((numberOfSinks == 0 || producerSinksList.size() == 0)) {
+					if ((sinkIndex == startingSinkNo)) {
 						if (writeToFile == true) {
 							fileRecordCounter = writeMessageToFile(fileRecordCounter, message);
 							if (fileRecordCounter >= recordsPerFile) {
@@ -243,7 +248,7 @@ public class JMSLoadBalancerSink {
 								fileRecordCounter = 0;
 							}
 							// TODO: why this is set to true? Not able to send
-							// message yet? to get rid off while loop
+							// message yet, no possible way to send. to get rid off while loop
 							messageSent = true;
 						} else {
 							// TODO : code review
@@ -258,12 +263,15 @@ public class JMSLoadBalancerSink {
 								textMessage = sessionList.get(sinkIndex).createTextMessage(message);
 								messageSent = sendMessage(textMessage, producerSinksList.get(sinkIndex),
 										numberOfTimesToTryToSendMessage);
+								logger.log(java.util.logging.Level.INFO,
+										messasgeCount + ". Sent message to  Sink No: " + sinkIndex);
+								messasgeCount++;
 							} else if (isValidSession) {
 								// reconnectNSendMessage(message, messageType);
 							} else {
 								// try all the sinks, no luck.
 								// get freedom from while true loop
-								break;
+//								break;
 							}
 						} catch (Exception ex) {
 							logger.log(java.util.logging.Level.WARNING, "Messaging failed to queue..");
@@ -271,7 +279,6 @@ public class JMSLoadBalancerSink {
 					}
 				}
 				// Next time it will send to the next available sink.
-
 				sinkIndex++;
 				sinkIndex = (sinkIndex >= numberOfSinks) ? 0 : sinkIndex;
 
