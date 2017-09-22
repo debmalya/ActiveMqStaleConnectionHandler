@@ -21,35 +21,35 @@ For example, we have four porperly initialized connections, they are maintained 
 Now, if second connection goes down due to some reason, this list will become like this.
 
  -------
-|   0   |
+    0   
  -------
-| null  |
+   null  
  -------
-|   2   |
+    2   
  -------
-|   3   |
+    3   
  -------
 
-Injury List
+There will be an addition in the injury List
  -------
-|   1   |
+    1   
  -------
 
 After some point of time, this connection becomes available and recovery service finds it is available in a periodic run. Freshly intializes the connection assign it in the proper index.
 
  -------
-|   0   |
+    0   
  -------
-|   1   |
+    1   
  -------
-|   2   |
+    2   
  -------
-|   3   |
+    3   
  -------
  
  Injury List is blank now.
  
-Just imagine there is a team game (e.g. Basketball, football), every player has their fixed jursey (in this case index). Whenever any player is injured (s)he is not available in the active player list. After a period, when (s)he is fit for the game he is listed again in the starting team.
+Just imagine there is a sports team (e.g. Basketball, football), every player has their fixed jursey (in this case index). Whenever any player is injured (s)he is not available in the active player list. After a period, when (s)he is fit for the game he is listed again in the starting team.
 
 
 # Reference
