@@ -13,7 +13,7 @@ public class JMSLoadBalancerSinkTest {
 		try {
 			// 1. Running ActiveMQ locally.
 			// 2. Running ActiveMQ in VM.
-			sinking.initialize("test.reconnection|test.reconnection", "tcp://localhost:61616|tcp://192.168.165.135:61616", 3, 3, true, 1, "./output");
+			sinking.initialize("test.reconnection|test.reconnection", "tcp://localhost:61616|tcp://192.168.165.134:61616", 3, 3, true, 1, "./output");
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.assertFalse(e.getMessage(), true);
@@ -54,7 +54,7 @@ public class JMSLoadBalancerSinkTest {
 		for (int i = 0; i < 1000; i++) {
 			try {
 				sinking.process("This is a test message", "text");
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Assert.assertFalse(e.getMessage(), true);

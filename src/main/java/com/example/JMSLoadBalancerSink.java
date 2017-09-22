@@ -38,7 +38,7 @@ public class JMSLoadBalancerSink {
 	private int recordsPerFile;
 	private long messasgeCount = 0;
 
-	// TODO: This will run recovery service, if dead connection becomes
+	// This will run recovery service, if dead connection becomes
 	// available add them into the list.
 	private ScheduledThreadPoolExecutor recoveryService = new ScheduledThreadPoolExecutor(1);
 
@@ -56,9 +56,9 @@ public class JMSLoadBalancerSink {
 	private boolean writeToFile = true;
 
 	protected Logger logger = Logger.getLogger("JMSLoadBalancerSink.log");
-	// TODO : introduced new variable (needs review)
+	// CHANGE : introduced new variable (needs review)
 	private long retryDelay = 1500;
-	// TODO: introduced new list to keep track of dead connection to retry.
+	// CHANGE: introduced new list to keep track of dead connection to retry.
 	private List<Integer> injuryList = new ArrayList<>();
 
 	/**
@@ -147,7 +147,7 @@ public class JMSLoadBalancerSink {
 					// TODO : introduced retry delay
 					Thread.sleep(retryDelay);
 					if (j == numberOfTimesToTryToReconnect - 1) {
-						// TODO: all attempts failed now adding into
+						// all attempts failed now adding into
 						// deadIndexList
 						// later we will use it to reconnect.
 						injuryList.add(i);
@@ -155,10 +155,11 @@ public class JMSLoadBalancerSink {
 						// Later when this connection is available we will set
 						// it.
 						// To fix the issue #1
+						producerSinksList.add(null);
 						destinationsList.add(null);
 						connectionList.add(null);
 						sessionList.add(null);
-						producerSinksList.add(null);
+						
 					}
 				}
 			}
@@ -473,6 +474,11 @@ public class JMSLoadBalancerSink {
 		return fileRecordCounter;
 	}
 
+	/**
+	 * This finds the lost connections.
+	 * @author debmalyajash
+	 *
+	 */
 	class Recoverer implements Runnable {
 
 		@Override
