@@ -27,10 +27,10 @@ Second activeMQ queue before test
 Second activeMQ queue after test
 ![GitHub Logo](./images/SecondActiveMQScenario2End.png)
 
-Second queue consume all 1000 messages.
+Second queue consumed all 1000 messages.
 
 # Scenario 3
-Both the connections are active at the beginning of the test. Stopped first connection in the middle of the test. Kept first one was stopped througout the remaining part of the test.
+Both the connections are active at the beginning of the test. Stopped first connection in the middle of the test.  First one was stopped througout the remaining part of the test.
 
 First activeMQ queue before test
 ![GitHub Logo](./images/FirstActiveMQueueBeforeScenario3.png)
@@ -65,6 +65,22 @@ What happens initially both the queues consumed messages. After consuming 19 mes
 total messages consumed by the first queue = 431
 total messages consumed by the second queue = 569
 total number of messages = 1000
+
+
+# Scenario 5
+Both the connection are stopped at beginning. Then they are started one by one. Recover service should be able to connect both of them after they have been started.
+
+Both the queues are deleted before test.
+
+After test, queue 1
+![GitHub Logo](./images/FirstQueueScenario5.png)
+After test, queue 2
+![GitHub Logo](./images/SecondQueueScenario5.png)
+
+First queue consumed 435 messages. Second queue consumed 436 messages. There are 129 messages persisted in files. 
+435+436+129=1000 messages.
+
+
 
 
 
