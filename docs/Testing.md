@@ -9,7 +9,7 @@ Second ActiveMQ queue
 
 Played 1000 messages, now
 First ActiveMQ queue
-![GitHub Logo](./images/FristActiveMQAfterScenario1.png)
+![GitHub Logo](./images/SecondActiveMQAfterScenario1.png)
 
 Second ActiveMQ queue
-![GitHub Logo](./images/SecondActiveMQAfterScenario1.png)
+![GitHub Logo](./images/FristActiveMQAfterScenario1.png)
