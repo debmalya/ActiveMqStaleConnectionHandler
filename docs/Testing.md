@@ -68,7 +68,7 @@ total number of messages = 1000
 
 
 # Scenario 5
-Both the connection are stopped at beginning. Then they are started one by one. Recover service should be able to connect both of them after they have been started.
+Both the connection are stopped at beginning. Then they are started one by one. Recovery service should be able to connect both of them after they have been started.
 
 Both the queues are deleted before test.
 
