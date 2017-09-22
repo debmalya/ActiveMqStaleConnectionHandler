@@ -7,4 +7,14 @@ First ActiveMQ queue
 Second ActiveMQ queue
 ![GitHub Logo](./images/SecondActiveMQBeforeTest.png)
 
-Played 1000 messages.
+Played 1000 messages, now
+First ActiveMQ queue
+![GitHub Logo](./images/SecondActiveMQAfterScenario1.png)
+
+Second ActiveMQ queue
+![GitHub Logo](./images/FristActiveMQAfterScenario1.png)
+#### messages are equally distributed in both the queues
+
+
+# Scenario 2
+First activeMQ connection is not active, only second one is active.
