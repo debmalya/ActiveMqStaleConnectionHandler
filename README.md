@@ -9,13 +9,13 @@ How to handle reconnection after inactivity IO exception from ActiveMQ
 
 For example, we have four porperly initialized connections, they are maintained in a list.
  -------
-|   0   |
+    0   
  -------
-|   1   |
+    1   
  -------
-|   2   |
+    2   
  -------
-|   3   |
+    3   
  -------
 
 Now, if second connection goes down due to some reason, this list will become like this.
