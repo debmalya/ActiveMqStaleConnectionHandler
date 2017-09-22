@@ -1,3 +1,5 @@
+For all the scenarios played one message in every second. Total 1000 messages are played . Recovery service is running every minute.
+
 # Scenario 1
 There are two active MQ connections both are active. 
 
@@ -17,7 +19,7 @@ Second ActiveMQ queue
 
 
 # Scenario 2
-First activeMQ connection is not active from the beginning of the test, only second one is active. Kept first one stopped througout the remaining part of the test.
+First activeMQ connection is not active from the beginning of the test, only second one is active. Kept first one was stopped througout the remaining part of the test.
 
 Second activeMQ queue before test
 ![GitHub Logo](./images/SecondAMQScenario2.png)
@@ -25,8 +27,10 @@ Second activeMQ queue before test
 Second activeMQ queue after test
 ![GitHub Logo](./images/SecondActiveMQScenario2End.png)
 
+Second queue consume all 1000 messages.
+
 # Scenario 3
-Both the connections are active at the beginning of the test. Stopped first connection in the middle of the test. Kept first one througout the remaining part of the test.
+Both the connections are active at the beginning of the test. Stopped first connection in the middle of the test. Kept first one was stopped througout the remaining part of the test.
 
 First activeMQ queue before test
 ![GitHub Logo](./images/FirstActiveMQueueBeforeScenario3.png)
