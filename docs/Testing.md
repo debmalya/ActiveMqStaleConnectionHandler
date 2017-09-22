@@ -17,7 +17,7 @@ Second ActiveMQ queue
 
 
 # Scenario 2
-First activeMQ connection is not active from the beginning of the test, only second one is active. Kept first one througout the remaining part of the test.
+First activeMQ connection is not active from the beginning of the test, only second one is active. Kept first one stopped througout the remaining part of the test.
 
 Second activeMQ queue before test
 ![GitHub Logo](./images/SecondAMQScenario2.png)
