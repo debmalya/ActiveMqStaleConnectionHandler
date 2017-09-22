@@ -58,7 +58,7 @@ public class JMSLoadBalancerSink {
 	// TODO : introduced new variable (needs review)
 	private long retryDelay = 15000;
 	// TODO: introduced new list to keep track of dead connection to retry.
-	private List<Integer> deadIndexList = new ArrayList<>();
+	private List<Integer> injuryList = new ArrayList<>();
 
 	/**
 	 * To initialize ActiveMQ connections,
@@ -149,7 +149,7 @@ public class JMSLoadBalancerSink {
 						// TODO: all attempts failed now adding into
 						// deadIndexList
 						// later we will use it to reconnect.
-						deadIndexList.add(i);
+						injuryList.add(i);
 					}
 				}
 			}
@@ -217,8 +217,8 @@ public class JMSLoadBalancerSink {
 						// added those index to
 						connectionList.set(sinkIndex, null);
 						connectionFactoryList.set(sinkIndex, null);
-						if (!deadIndexList.contains(sinkIndex)) {
-							deadIndexList.add(sinkIndex);
+						if (!injuryList.contains(sinkIndex)) {
+							injuryList.add(sinkIndex);
 							logger.log(java.util.logging.Level.WARNING, "Added to dead index list, sink No: "
 									+ sinkIndex + ", Sink: " + (queueNamesList.get(sinkIndex).toString()));
 						}
@@ -313,7 +313,7 @@ public class JMSLoadBalancerSink {
 	}
 
 	private void reconnect() throws InterruptedException {
-		int numberOfDeadIndex = deadIndexList.size();
+		int numberOfDeadIndex = injuryList.size();
 
 		for (int i = numberOfDeadIndex - 1; i > -1; i--) {
 			connectionFactoryList.set(i, new ActiveMQConnectionFactory(brokerURL[i]));
@@ -334,7 +334,7 @@ public class JMSLoadBalancerSink {
 					Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 					sessionList.set(i, session);
 
-					deadIndexList.remove(i);
+					injuryList.remove(i);
 					logger.log(java.util.logging.Level.INFO, " Able to establish connection " + i);
 					MessageProducer producer = session.createProducer(destinationsList.get(i));
 					producer.setDeliveryMode(DeliveryMode.PERSISTENT);
@@ -351,8 +351,8 @@ public class JMSLoadBalancerSink {
 						// TODO: all attempts failed now adding into
 						// deadIndexList
 						// later we will use it to reconnect.
-						if (!deadIndexList.contains(i)) {
-							deadIndexList.add(i);
+						if (!injuryList.contains(i)) {
+							injuryList.add(i);
 						}
 					}
 				}
@@ -365,7 +365,7 @@ public class JMSLoadBalancerSink {
 				numberOfSinks = producerSinksList.size();
 			}
 			logger.log(java.util.logging.Level.INFO,
-					"Number of sinks available " + numberOfSinks + " number of dead sinks :" + deadIndexList.size());
+					"Number of sinks available " + numberOfSinks + " number of dead sinks :" + injuryList.size());
 		}
 	}
 
@@ -450,7 +450,7 @@ public class JMSLoadBalancerSink {
 		public void run() {
 			try {
 				logger.log(java.util.logging.Level.INFO,
-						"Recovery service is running. Number of unavailable connections " + deadIndexList.size());
+						"Recovery service is running. Number of unavailable connections " + injuryList.size());
 				reconnect();
 			} catch (Throwable th) {
 				logger.log(java.util.logging.Level.SEVERE, "ERROR occurred while trying to reconnect", th);
