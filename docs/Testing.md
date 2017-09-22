@@ -18,3 +18,9 @@ Second ActiveMQ queue
 
 # Scenario 2
 First activeMQ connection is not active, only second one is active.
+
+Second activeMQ queue before test
+![GitHub Logo](./images/SecondAMQScenario2.png)
+
+Second activeMQ queue after test
+![GitHub Logo](./images/SecondActiveMQScenario2End.png)
