@@ -46,5 +46,21 @@ Messages consumed by the first queue is 74 (574 - 500)
 Messages consumed by the second queue is 926
 
 
+# Scenario 4
+Till now whatever test we are doing, recover service is not tested. This one is for recovery, from the beginning first active MQ connection will be down. Somepoint of time during the test, it will be connected to check whether it is recovered and message delivered in the corresponding queue.
+
+All the queues are purged and deleted.
+
+After test number of messages in the first queue.
+![GitHub Logo](./images/FirstQueueScenario4.png)
+
+After test number of messages in the second queue.
+![GitHub Logo](./images/SecondQueueScenario4.png)
+
+What happens initially both the queues consumed messages. After consuming 19 messages, first activme was stopped. After a while it started again. Recovery service recovered the first connection. After that it consumed 412 messages.
+total messages consumed by the first queue = 431
+total messages consumed by the second queue = 569
+total number of messages = 1000
+
 
 
