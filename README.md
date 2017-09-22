@@ -49,7 +49,7 @@ After some point of time, this connection becomes available and recovery service
  
  Injury List is blank now.
  
-Just imagine there is a sports team (e.g. Basketball, football), every player has their fixed jursey (in this case index). Whenever any player is injured (s)he is not available in the active player list. After a period, when (s)he is fit for the game he is listed again in the starting team.
+Just imagine there is a sports team (e.g. Basketball, football), every player has their fixed jursey (in this case index). Whenever any player is injured (s)he is not available in the active player list. After a period, when (s)he is fit for the game (s)he is listed again in the starting team.
 
 
 # Reference
