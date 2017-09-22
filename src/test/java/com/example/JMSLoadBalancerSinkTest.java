@@ -22,7 +22,7 @@ public class JMSLoadBalancerSinkTest {
 	/**
 	 * 
 	 */
-	@Test
+//	@Test
 	public void testInitialize() {
 		Assert.assertNotNull(sinking);
 
@@ -31,7 +31,7 @@ public class JMSLoadBalancerSinkTest {
 	/**
 	 * Just sending a message and checking whether successful or not.
 	 */
-	@Test
+//	@Test
 	public void testProcess() {
 		try {
 			sinking.process("This is a test message", "text");
@@ -53,7 +53,7 @@ public class JMSLoadBalancerSinkTest {
 		for (int i = 0; i < 1000; i++) {
 			try {
 				sinking.process("This is a test message", "text");
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Assert.assertFalse(e.getMessage(), true);
